@@ -4,11 +4,12 @@ import java.sql.* ;
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Scanner;
 
 class connectExample {
         public static void main(String args[]) throws SQLException {
 
-
+            initializeGame();
             // Unique table names.  Either the user supplies a unique identifier as a command line argument, or the program makes one up.
             String tableName = "";
             int sqlCode=0;      // Variable to hold SQLCODE
@@ -68,6 +69,56 @@ class connectExample {
             con.close ( ) ;
         }
 
+    /**
+     * game start here
+     * prompt user's choice
+     * then call the coresponding method
+     */
+    public static void initializeGame(){
+        System.out.println("welcome to pokemongo!");
+        System.out.println("now you can: 1. capture pokemon" +
+                "2. add friend " +
+                "3. add a group " +
+                "4. check your bag " +
+                "5. raid a boss ");
+
+        System.out.println("now go ahead and select one by type the number coresponding to it " +
+                "to start your adventure!" +
+                "");
+
+
+        Scanner userChoice = new Scanner(System.in);
+        int choice = userChoice.nextInt();
+        switch(choice) {
+            case 1:
+                // code block
+                break;
+            case 2:
+               //add friend
+                addFriend();
+                break;
+            case 3:
+                // code block
+                break;
+            case 4:
+                // code block
+                break;
+            case 5:
+                // code block
+                break;
+            default:
+                // code block
+        }
+
+
+    }
+
+    /*
+    add friend
+     */
+    static void addFriend(){
+
+    }
 
 
 }
