@@ -261,6 +261,10 @@ class connectExample {
 
     }
 
+    static void startRaid(int sqlCode,String sqlState) throws SQLException {
+
+    }
+
 
 
 }
