@@ -255,6 +255,12 @@ class connectExample {
 
     }
 
+    static void createGroup(int sqlCode,String sqlState) throws SQLException {
+        int members = 1;
+
+
+    }
+
 
 
 }
