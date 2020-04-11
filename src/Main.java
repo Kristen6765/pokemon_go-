@@ -7,20 +7,38 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 class connectExample {
+        private static final String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        private static final String usernamestring="cs421g36";
+        private static final String passwordstring="Dalao2020.Dalao2020@";
+
+        private static String my_username = "";
+
         public static void main(String args[]) throws SQLException {
             System.out.println("Welcome to pokemongo!");
-            System.out.println("Are you a new user? If yes plase press 0 to create a new account.");
+            System.out.println("Do you already have an account? Type 'yes' or 'no'");
             Scanner scr = new Scanner(System.in);
-            int newPlayer = scr.nextInt();
-            if(newPlayer==0){
-                int sqlCode=0;      // Variable to hold SQLCODE
-                String sqlState="00000";  // Variable to hold SQLSTATE
-                createAccount(sqlCode,sqlState);
+            String newPlayer = scr.nextLine();
+            if(newPlayer=="no") {
+                int sqlCode = 0;      // Variable to hold SQLCODE
+                String sqlState = "00000";  // Variable to hold SQLSTATE
+                createAccount(sqlCode, sqlState);
             }
+
+            Scanner userChoice = new Scanner(System.in);
+            System.out.println("Please enter your username to log in.");
+            String ans = userChoice.nextLine();
+            Boolean doesnotexist = checkIfUserExists(ans);
+
+            while (doesnotexist == false) {
+                System.out.println("Username does not exist. Please enter your username again");
+                ans = userChoice.nextLine();
+                doesnotexist = checkIfUserExists(ans);
+            }
+
+            my_username = ans;
 
             //if player already have an account, start the game
             initializeGame();
-
 
             }
 
@@ -29,6 +47,102 @@ class connectExample {
      * prompt user's choice
      * then call the coresponding method
      */
+
+    public static Boolean checkIfUserExists(String test_user) throws SQLException {
+        Connection con = DriverManager.getConnection (url,usernamestring, passwordstring) ;
+        Statement statement = con.createStatement ( ) ;
+        int sqlCode=0;      // Variable to hold SQLCODE
+        String sqlState="00000";  // Variable to hold SQLSTATE
+        int count = 0;
+
+        try {
+            String querySQL = "SELECT COUNT(code) FROM Players WHERE username ='" + test_user + "'";
+            //System.out.println (querySQL) ;
+            ResultSet rs = statement.executeQuery ( querySQL ) ;
+            //create an unique code not in db yet
+            while ( rs.next ( ) ) {
+                count = rs.getInt("count") ;
+                //System.out.println (count);
+            }
+            //System.out.println ("DONE");
+        } catch (SQLException e)
+        {
+            sqlCode = e.getErrorCode(); // Get SQLCODE
+            sqlState = e.getSQLState(); // Get SQLSTATE
+
+            // Your code to handle errors comes here;
+            // something more meaningful than a print would be good
+            System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
+        }
+
+        // now ask user which user code they are
+
+        if (count == 0) {
+            return false;      //user does not exist
+        }
+
+        System.out.println("Successfully logged in.");
+        int code = 0;
+
+        try {
+            String querySQL = "SELECT * FROM Players WHERE username ='" + test_user + "'";
+            //System.out.println (querySQL) ;
+            ResultSet rs = statement.executeQuery ( querySQL ) ;
+            //create an unique code not in db yet
+            while ( rs.next ( ) ) {
+                String username = rs.getString("username") ;
+                System.out.print("Username: " + username + "\t");
+                int level = rs.getInt("level");
+                System.out.print("Level: " + level + "\t");
+                code = rs.getInt("code");
+                System.out.print("Code: " + code);
+            }
+            System.out.println();
+            //System.out.println ("DONE");
+        } catch (SQLException e)
+        {
+            sqlCode = e.getErrorCode(); // Get SQLCODE
+            sqlState = e.getSQLState(); // Get SQLSTATE
+
+            // Your code to handle errors comes here;
+            // something more meaningful than a print would be good
+           // System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
+        }
+
+
+        try {
+            String querySQL = "SELECT username FROM Players WHERE code =" + code;
+            //System.out.println (querySQL) ;
+            ResultSet rs = statement.executeQuery ( querySQL ) ;
+            //create an unique code not in db yet
+            System.out.println("You're currently in a group with the following people: ");
+            while ( rs.next ( ) ) {
+                String friend = rs.getString("username");
+                if (friend.equals(test_user) == false) {
+                    System.out.print(friend + "\t");
+                }
+            }
+            //System.out.println ("DONE");
+            System.out.println();
+        } catch (SQLException e)
+        {
+            sqlCode = e.getErrorCode(); // Get SQLCODE
+            sqlState = e.getSQLState(); // Get SQLSTATE
+
+            // Your code to handle errors comes here;
+            // something more meaningful than a print would be good
+            //System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
+        }
+
+        statement.close();
+        con.close();
+
+        return true;
+
+    }
+
+
+
     public static void initializeGame() throws SQLException {
         // Register the driver.  You must register the driver before you can use it.
         try {
@@ -38,6 +152,10 @@ class connectExample {
         }
         int sqlCode=0;      // Variable to hold SQLCODE
         String sqlState="00000";  // Variable to hold SQLSTATE
+
+       // System.out.println("Please enter your username to log in.");
+        Scanner userChoice = new Scanner(System.in);
+       // my_username = userChoice.nextLine();
 
         System.out.println("now you can: 1. capture pokemon" +
                 "2. add friend " +
@@ -50,8 +168,8 @@ class connectExample {
                 "");
 
 
-        //promot from user
-        Scanner userChoice = new Scanner(System.in);
+        //prompt from user
+        //Scanner userChoice = new Scanner(System.in);
         int choice = userChoice.nextInt();
         //magic door to the method
         switch(choice) {
@@ -77,16 +195,16 @@ class connectExample {
                 // code block
         }
 
-
+        userChoice.close();
 
 
     }
     static void  createAccount(int sqlCode,String sqlState) throws SQLException {
         // This is the url you must use for Postgresql.
         //Note: This url may not valid now !
-        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
-        String usernamestring="cs421g36";
-        String passwordstring="Dalao2020.Dalao2020@";
+        //String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+        //String usernamestring="cs421g36";
+        //String passwordstring="Dalao2020.Dalao2020@";
         Connection con = DriverManager.getConnection (url,usernamestring, passwordstring) ;
         Statement statement = con.createStatement ( ) ;
         int maxCode=0;
@@ -148,7 +266,7 @@ class connectExample {
             // something more meaningful than a print would be good
             System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
         }
-
+        userChoice.close();
     }
 
 
@@ -159,9 +277,9 @@ class connectExample {
 
         // This is the url you must use for Postgresql.
         //Note: This url may not valid now !
-        String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
-        String usernamestring="cs421g36";
-        String passwordstring="Dalao2020.Dalao2020@";
+       // String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+       // String usernamestring="cs421g36";
+       // String passwordstring="Dalao2020.Dalao2020@";
         Connection con = DriverManager.getConnection (url,usernamestring, passwordstring) ;
         Statement statement = con.createStatement ( ) ;
 
@@ -171,9 +289,11 @@ class connectExample {
         System.out.println("Please type in your friend's name");
         Scanner fName = new Scanner(System.in);
         String friendName = fName.nextLine();
-        System.out.println("Please type in your name");
-        Scanner uName = new Scanner(System.in);
-        String userName = uName.nextLine();
+        fName.close();
+        //System.out.println("Please type in your name");
+        //Scanner uName = new Scanner(System.in);
+        //String userName = uName.nextLine();
+        String userName = my_username;
 
         // Inserting Data into the table (befriends)
         try {
@@ -192,6 +312,8 @@ class connectExample {
             // Your code to handle errors comes here;
             // something more meaningful than a print would be good
             System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
+            statement.close();
+            con.close();
         }
 
 
@@ -204,7 +326,7 @@ class connectExample {
     }
 
     static void  checkBag(int sqlCode,String sqlState) throws SQLException {
-        System.out.println("you you want to chech bag? yes/no");
+        System.out.println("you you want to check bag? yes/no");
         Scanner scanner = new Scanner(System.in);
         String choice = scanner.nextLine();
         if(choice=="no"){
@@ -212,16 +334,18 @@ class connectExample {
         }
 
             //connect
-            String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
-            String usernamestring="cs421g36";
-            String passwordstring="Dalao2020.Dalao2020@";
+          //  String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+           // String usernamestring="cs421g36";
+           // String passwordstring="Dalao2020.Dalao2020@";
             Connection con = DriverManager.getConnection (url,usernamestring, passwordstring) ;
             Statement statement = con.createStatement ( ) ;
 
 
-            System.out.println("please insert your user name");
-            Scanner sc = new Scanner(System.in);
-            String userName = sc.nextLine();
+            //System.out.println("please insert your user name");
+            //Scanner sc = new Scanner(System.in);
+            //String userName = sc.nextLine();
+            String userName = my_username;
+
             // String userName="Alice";
             // Querying a table
             try {
@@ -255,8 +379,55 @@ class connectExample {
 
     }
 
-    static void createGroup(int sqlCode,String sqlState) throws SQLException {
+    static void createParty(int sqlCode,String sqlState) throws SQLException {
+        //connect
+      //  String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+       // String usernamestring="cs421g36";
+       // String passwordstring="Dalao2020.Dalao2020@";
+        Connection con = DriverManager.getConnection (url,usernamestring, passwordstring) ;
+        Statement statement = con.createStatement ( ) ;
+
+        System.out.println("please insert your user name");
+        Scanner sc = new Scanner(System.in);
+        String userName = sc.nextLine();
+        // String userName="Alice";
+        // Querying a table
+        try {
+            String querySQL = "SELECT pokename from capturablepokemons where username= '" + userName +"'";
+            // String querySQL = "SELECT max(code) from groups;";
+            System.out.println (querySQL) ;
+            ResultSet rs = statement.executeQuery ( querySQL ) ;
+
+            //print all pokenames the user has
+            while ( rs.next ( ) ) {
+                String pokename = rs.getString (1) ;
+                System.out.println ("pokename:  " + pokename);
+
+            }
+            System.out.println ("DONE");
+        } catch (SQLException e)
+        {
+
+            sqlCode = e.getErrorCode(); // Get SQLCODE
+            sqlState = e.getSQLState(); // Get SQLSTATE
+
+            // Your code to handle errors comes here;
+            // something more meaningful than a print would be good
+            System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
+        }
+
+        statement.close ( ) ;
+        con.close ( ) ;
+
+
+        System.out.println("Do you want to create a new raid party? yes/no");
+        Scanner scanner = new Scanner(System.in);
+        String choice = scanner.nextLine();
+        if(choice=="no"){
+            return;
+        }
         int members = 1;
+
 
 
     }
