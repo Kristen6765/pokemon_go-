@@ -37,9 +37,20 @@ class connectExample {
 
             my_username = ans;
 
-            //if player already have an account, start the game
-            initializeGame();
+            try {
+                DriverManager.registerDriver ( new Driver() ) ;
+            } catch (Exception cnfe){
+                System.out.println("Class not found");
+            }
 
+            //if player already have an account, start the game
+            Boolean play = true;
+            while (play) {
+                play = playGame();
+            }
+
+            userChoice.close();
+            System.out.println("Thank you for playing!");
             }
 
     /**
@@ -48,11 +59,68 @@ class connectExample {
      * then call the coresponding method
      */
 
-    public static Boolean checkIfUserExists(String test_user) throws SQLException {
-        Connection con = DriverManager.getConnection (url,usernamestring, passwordstring) ;
-        Statement statement = con.createStatement ( ) ;
+    public static Boolean playGame() throws SQLException {
+        // Register the driver.  You must register the driver before you can use it.
+       // System.out.println("Please enter your username to log in.");
         int sqlCode=0;      // Variable to hold SQLCODE
         String sqlState="00000";  // Variable to hold SQLSTATE
+        Scanner userChoice = new Scanner(System.in);
+       // my_username = userChoice.nextLine();
+
+        System.out.println("now you can: " +
+                        "1. quit" +
+                "2. add friend " +
+                "3. capture pokemon " +
+                "4. check your bag "
+                );
+
+        System.out.println("now go ahead and select one by type the number coresponding to it " +
+                "to start your adventure!" +
+                "");
+
+
+        //prompt from user
+        //Scanner userChoice = new Scanner(System.in);
+        int choice = userChoice.nextInt();
+        //magic door to the method
+        switch(choice) {
+            case 1:
+                // quit
+                System.out.println("Do you want to quit? Type 'yes' or 'no'");
+                String ans = userChoice.nextLine();
+                if (ans.equals("yes"))  {
+                    userChoice.close();
+                    return false;
+                }
+                break;
+            case 2:
+               //add friend
+                addFriend(sqlCode,sqlState);
+                break;
+            case 3:
+                // capture pokemon;
+
+                break;
+            case 4:
+                // check bag
+                checkBag(sqlCode,sqlState);
+                break;
+            case 5:
+                break;
+            default:
+                // code block
+                return true;
+        }
+
+        userChoice.close();
+        return true;
+    }
+
+    static Boolean checkIfUserExists(String test_user) throws SQLException {
+        Connection con = DriverManager.getConnection (url,usernamestring, passwordstring) ;
+        Statement statement = con.createStatement ( ) ;
+        int sqlCode;      // Variable to hold SQLCODE
+        String sqlState;  // Variable to hold SQLSTATE
         int count = 0;
 
         try {
@@ -106,7 +174,7 @@ class connectExample {
 
             // Your code to handle errors comes here;
             // something more meaningful than a print would be good
-           // System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
+            // System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
         }
 
 
@@ -142,63 +210,6 @@ class connectExample {
     }
 
 
-
-    public static void initializeGame() throws SQLException {
-        // Register the driver.  You must register the driver before you can use it.
-        try {
-            DriverManager.registerDriver ( new Driver() ) ;
-        } catch (Exception cnfe){
-            System.out.println("Class not found");
-        }
-        int sqlCode=0;      // Variable to hold SQLCODE
-        String sqlState="00000";  // Variable to hold SQLSTATE
-
-       // System.out.println("Please enter your username to log in.");
-        Scanner userChoice = new Scanner(System.in);
-       // my_username = userChoice.nextLine();
-
-        System.out.println("now you can: 1. capture pokemon" +
-                "2. add friend " +
-                "3. add a group " +
-                "4. check your bag " +
-                "5. raid a boss ");
-
-        System.out.println("now go ahead and select one by type the number coresponding to it " +
-                "to start your adventure!" +
-                "");
-
-
-        //prompt from user
-        //Scanner userChoice = new Scanner(System.in);
-        int choice = userChoice.nextInt();
-        //magic door to the method
-        switch(choice) {
-            case 1:
-                // code block
-                break;
-            case 2:
-               //add friend
-                addFriend(sqlCode,sqlState);
-                break;
-            case 3:
-                // code block
-
-                break;
-            case 4:
-                // check bag
-                checkBag(sqlCode,sqlState);
-                break;
-            case 5:
-                // code block
-                break;
-            default:
-                // code block
-        }
-
-        userChoice.close();
-
-
-    }
     static void  createAccount(int sqlCode,String sqlState) throws SQLException {
         // This is the url you must use for Postgresql.
         //Note: This url may not valid now !
@@ -387,13 +398,10 @@ class connectExample {
         Connection con = DriverManager.getConnection (url,usernamestring, passwordstring) ;
         Statement statement = con.createStatement ( ) ;
 
-        System.out.println("please insert your user name");
-        Scanner sc = new Scanner(System.in);
-        String userName = sc.nextLine();
         // String userName="Alice";
         // Querying a table
         try {
-            String querySQL = "SELECT pokename from capturablepokemons where username= '" + userName +"'";
+            String querySQL = "SELECT pokename from capturablepokemons where username= '" + my_username +"'";
             // String querySQL = "SELECT max(code) from groups;";
             System.out.println (querySQL) ;
             ResultSet rs = statement.executeQuery ( querySQL ) ;
@@ -432,8 +440,14 @@ class connectExample {
 
     }
 
-    static void startRaid(int sqlCode,String sqlState) throws SQLException {
+    static void capturePokemon(int sqlCode,String sqlState) throws SQLException {
+        Connection con = DriverManager.getConnection (url,usernamestring, passwordstring) ;
+        Statement statement = con.createStatement ( ) ;
 
+
+
+        statement.close ( ) ;
+        con.close ( ) ;
     }
 
 
