@@ -184,7 +184,7 @@ class connectExample {
             // System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
         }
 
-
+// hello
         try {
             String querySQL = "SELECT username FROM Players WHERE code =" + player_code;
             //System.out.println (querySQL) ;
