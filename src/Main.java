@@ -275,9 +275,9 @@ class connectExample {
         try {
 
             String insertSQL = "INSERT INTO  players VALUES (\'"+name+"\',0,\'"+newCode+"\')" ;
-            System.out.println ( insertSQL ) ;
+           // System.out.println ( insertSQL ) ;
             statement.executeUpdate ( insertSQL ) ;
-            System.out.println ( "DONE"+ name+"you have a new account with groupID"+maxCode) ;
+            System.out.println ( "DONE, "+ name+", you have a new account with an auto generated groupID: "+maxCode) ;
         }catch (SQLException e)
         {
             sqlCode = e.getErrorCode(); // Get SQLCODE
@@ -313,6 +313,7 @@ class connectExample {
             //System.out.println ( insertSQL ) ;
             statement.executeUpdate ( insertSQL ) ;
             // System.out.println ( "DONE" ) ;
+            System.out.println("Now you are friends with: "+friendName);
 
         }catch (SQLException e)
         {
@@ -323,21 +324,22 @@ class connectExample {
             // Your code to handle errors comes here;
             // something more meaningful than a print would be good
             System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
+            System.out.println("This user does not exist, or you are already friends with them.");
         }
 
 
 
         //print out all friends of user
-        System.out.println("Now you are friends with: "+friendName);
+
 
         statement.close ( ) ;
         con.close ( ) ;
     }
 
     static void  checkBag(int sqlCode,String sqlState) throws SQLException {
-        System.out.println("you you want to check bag? yes/no");
+        System.out.println("Do you want to check bag? yes/no");
         String choice = playing.nextLine();
-        if(choice=="no"){
+        if(choice.equals("no")){
             return;
         }
         //connect
@@ -354,7 +356,7 @@ class connectExample {
         try {
             String querySQL = "SELECT pokename from capturablepokemons where username= '" + userName +"'";
             // String querySQL = "SELECT max(code) from groups;";
-            System.out.println (querySQL) ;
+            //System.out.println (querySQL) ;
             ResultSet rs = statement.executeQuery ( querySQL ) ;
 
             //print all pokenames the user has
@@ -511,7 +513,7 @@ class connectExample {
             statement.executeUpdate ( insertSQL ) ;
             //System.out.println ( "DONE" ) ;
             System.out.println("Your new pokemon:");
-            System.out.println(my_username + ": " + "\t" + pokename + " cp: " + type);
+            System.out.println(my_username + ": " + "\t" + pokename + " cp: " + cp);
         }catch (SQLException e)
         {
             sqlCode = e.getErrorCode(); // Get SQLCODE
