@@ -28,7 +28,7 @@ class connectExample {
         if(newPlayer.equals("no")) {
             int sqlCode = 0;      // Variable to hold SQLCODE
             String sqlState = "00000";  // Variable to hold SQLSTATE
-            System.out.println("call createA");
+           //System.out.println("call createA");
             createAccount(sqlCode, sqlState);
         }
 
@@ -275,9 +275,9 @@ class connectExample {
         try {
 
             String insertSQL = "INSERT INTO  players VALUES (\'"+name+"\',0,\'"+newCode+"\')" ;
-         //   System.out.println ( insertSQL ) ;
+            System.out.println ( insertSQL ) ;
             statement.executeUpdate ( insertSQL ) ;
-            System.out.println ( "DONE"+ name+"you have a new account with groupID "+maxCode) ;
+            System.out.println ( "DONE"+ name+"you have a new account with groupID"+maxCode) ;
         }catch (SQLException e)
         {
             sqlCode = e.getErrorCode(); // Get SQLCODE
